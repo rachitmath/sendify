@@ -4,6 +4,11 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
+      import('./pages/landing/landing-page.component').then((m) => m.LandingPageComponent),
+  },
+  {
+    path: 'upload',
+    loadComponent: () =>
       import('./features/upload/upload-page.component').then((m) => m.UploadPageComponent),
   },
   {
