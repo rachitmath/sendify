@@ -25,7 +25,7 @@ if (typeof window !== 'undefined') {
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-cyan opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-cyan"></span>
               </span>
-              Sendify 2.0 is now live
+              Sendify 1.0 is now live
             </div>
             <h1 class="heading-display text-6xl sm:text-7xl lg:text-8xl xl:text-9xl mb-6 hero-title">
               SEND FILES AT<br/>
@@ -382,11 +382,11 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
-    
+
     // Give a small timeout for the DOM to be fully ready
     setTimeout(() => {
       this.initHeroAnimations();
@@ -398,13 +398,13 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
 
   private initHeroAnimations() {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    
+
     tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.6, delay: 0.2 })
       .from('.hero-title', { y: 40, opacity: 0, duration: 0.8 }, '-=0.4')
       .from('.hero-desc', { y: 20, opacity: 0, duration: 0.6 }, '-=0.6')
       .from('.hero-cta', { y: 20, opacity: 0, duration: 0.6 }, '-=0.4')
-      .from('.floating-card', { 
-        x: 100, y: 50, rotationY: 25, rotationX: 15, opacity: 0, duration: 1.2, ease: 'expo.out' 
+      .from('.floating-card', {
+        x: 100, y: 50, rotationY: 25, rotationX: 15, opacity: 0, duration: 1.2, ease: 'expo.out'
       }, '-=1');
 
     gsap.to('.floating-card', {
@@ -526,25 +526,25 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     if (dropzone && idleState && activeState && progressBar && progressText && statusText) {
       dropzone.addEventListener('click', () => {
         if (!idleState.classList.contains('hidden')) {
-            // Hide idle, show active
-            idleState.classList.add('hidden');
-            activeState.classList.remove('hidden');
-            activeState.classList.add('flex');
-            
-            statusText.innerHTML = 'Optimizing & Encrypting payload...';
+          // Hide idle, show active
+          idleState.classList.add('hidden');
+          activeState.classList.remove('hidden');
+          activeState.classList.add('flex');
 
-            const tl = gsap.timeline();
-            
-            tl.to(progressBar, {
-              width: '100%',
-              duration: 2.5,
-              ease: 'power1.inOut',
-              onUpdate: function(this: any) {
-                progressText.innerHTML = Math.round(this['progress']() * 100) + '%';
-              }
-            })
+          statusText.innerHTML = 'Optimizing & Encrypting payload...';
+
+          const tl = gsap.timeline();
+
+          tl.to(progressBar, {
+            width: '100%',
+            duration: 2.5,
+            ease: 'power1.inOut',
+            onUpdate: function (this: any) {
+              progressText.innerHTML = Math.round(this['progress']() * 100) + '%';
+            }
+          })
             .call(() => {
-                statusText.innerHTML = 'Securing global route...';
+              statusText.innerHTML = 'Securing global route...';
             }, [], "-=1")
             .to(statusText, {
               innerHTML: 'Transfer Complete!',
@@ -560,12 +560,12 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
             })
             .to({}, { duration: 2.5 }) // Wait 2.5 seconds
             .call(() => {
-               // Reset
-               activeState.classList.add('hidden');
-               activeState.classList.remove('flex');
-               idleState.classList.remove('hidden');
-               gsap.set(progressBar, { width: '0%', backgroundColor: '' });
-               progressText.innerHTML = '0%';
+              // Reset
+              activeState.classList.add('hidden');
+              activeState.classList.remove('flex');
+              idleState.classList.remove('hidden');
+              gsap.set(progressBar, { width: '0%', backgroundColor: '' });
+              progressText.innerHTML = '0%';
             });
         }
       });

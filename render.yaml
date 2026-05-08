@@ -1,0 +1,43 @@
+services:
+  # The NestJS Backend API
+  - type: web
+    name: sendify-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false # User must provide this manually (e.g. MongoDB Atlas)
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: sendify-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: sendify-redis
+          property: port
+      - key: JWT_SECRET
+        generateValue: true
+      # AWS/S3 Configuration for MinIO/R2/AWS
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_S3_ENDPOINT
+        sync: false
+      - key: AWS_S3_BUCKET
+        sync: false
+
+  # Redis instance for BullMQ background workers
+  - type: redis
+    name: sendify-redis
+    ipAllowList: [] # only allow internal connections from Render services
