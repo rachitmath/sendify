@@ -3,13 +3,11 @@ module.exports = {
     {
       name: 'sendify-backend',
       script: 'dist/main.js',
-      instances: 1, // Change to 'max' to utilize all CPU cores
       autorestart: true,
       watch: false,
-      max_memory_restart: '1G',
+      // Tell PM2 to load .env.production file directly
       env_production: {
-        // Loads variables from .env.production file if specified in CLI,
-        // but typically PM2 can read standard env variables natively.
+        NODE_ENV: "production",
       }
     }
   ]
