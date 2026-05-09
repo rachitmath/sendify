@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile
+    restart: always
+    # Map the container's port 3000 to port 3001 on your EC2 instance.
+    # Change '3001' to whatever port you have available!
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/fileshare
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # If you use actual AWS S3 or Cloudflare R2, put those credentials below. 
+      # Otherwise, leave it to use the built-in MinIO container!
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-minioadmin}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-minioadmin}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET:-fileshare-uploads}
+      # Point to MinIO internally, unless you're using real S3/R2
+      - AWS_S3_ENDPOINT=${AWS_S3_ENDPOINT:-http://minio:9000}
+      - JWT_SECRET=${JWT_SECRET:-change-this-to-a-long-random-string}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+      - MAX_FILE_SIZE=5368709120
+      - CHUNK_SIZE=5242880
+      - UPLOAD_EXPIRY_HOURS=24
+      - APP_URL=${APP_URL:-http://localhost}
+    depends_on:
+      - mongodb
+      - redis
+      - minio
+    networks:
+      - fileshare-network
+
+  mongodb:
+    image: mongo:6
+    restart: always
+    # We comment out the ports here so Mongo isn't exposed directly to the internet!
+    # ports:
+    #   - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - fileshare-network
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    # ports:
+    #   - "6379:6379"
+    networks:
+      - fileshare-network
+
+  minio:
+    image: minio/minio:latest
+    restart: always
+    # Exposing 9000 is required if the frontend/users need direct download links from MinIO.
+    # If using AWS S3 or Cloudflare R2, you don't even need this MinIO service!
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - fileshare-network
+
+networks:
+  fileshare-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  minio_data:
